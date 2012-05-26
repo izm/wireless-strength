@@ -3,16 +3,34 @@
 # Originally written by Steven Brown
 # http://www.stevenbrown.ca
 
+print_usage_and_exit() {
+    echo "Usage: $0 interface interval" >&2
+    echo "       interface: the name of the interface" >&2
+    echo "       interval: the length in seconds between polls" >&2
+    exit 1
+}
+
+# Test Interface Parameter (if iwconfig outputs to stdout, it's ok) ##
+if [ `iwconfig $1 | wc -l` -gt 0 ]; then
+    INTERFACE=$1
+else
+    print_usage_and_exit
+fi
+
+# Test Interval, in seconds
+if ! [[ "$2" =~ ^[0-9]+$ ]]; then 
+    echo "Invalid interval '$2'" >&2
+    print_usage_and_exit
+else
+    SLEEPTIME=$2
+fi
 
 # CUSTOMIZE START ####################################################
-
-SLEEPTIME=2 # Seconds between each poll
-INTERFACE="wlan0"
 DATETIME=`date +"%Y.%m.%d-%H:%M:%S"` # Date/Time output format
-
 # CUSTOMIZE END ######################################################
 
 
+# Begin ##############################################################
 echo "# Wireless Strength at $SLEEPTIME second intervals."
 echo "# "`date +"%c"`
 
