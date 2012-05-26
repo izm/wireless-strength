@@ -3,35 +3,36 @@
 # Originally written by Steven Brown
 # http://www.stevenbrown.ca
 
+# CUSTOMIZE START ####################################################
+DATETIME=`date +"%Y.%m.%d-%H:%M:%S"` # Date/Time output format
+DEFAULT_SLEEPTIME=2
+# CUSTOMIZE END ######################################################
+
 print_usage_and_exit() {
-    echo "Usage: $0 interface interval" >&2
-    echo "       interface: the name of the interface" >&2
-    echo "       interval: the length in seconds between polls" >&2
+    echo "Usage: $0 [interval]" >&2
+    echo "       interval: the length in seconds between polls, default=$DEFAULT_SLEEPTIME" >&2
     exit 1
 }
 
-# Test Interface Parameter (if iwconfig outputs to stdout, it's ok) ##
-if [ `iwconfig $1 | wc -l` -gt 0 ]; then
-    INTERFACE=$1
+if [ $# -eq 0 ] ; then
+    SLEEPTIME=$DEFAULT_SLEEPTIME
+elif [ $# -eq 1 ] ; then
+    
+    # Test Interval, in seconds
+    if ! [[ "$1" =~ ^[0-9]+$ ]] ; then 
+	echo "Invalid interval '$1'" >&2
+	print_usage_and_exit
+    else
+	SLEEPTIME=$1
+    fi
 else
     print_usage_and_exit
 fi
-
-# Test Interval, in seconds
-if ! [[ "$2" =~ ^[0-9]+$ ]]; then 
-    echo "Invalid interval '$2'" >&2
-    print_usage_and_exit
-else
-    SLEEPTIME=$2
-fi
-
-# CUSTOMIZE START ####################################################
-DATETIME=`date +"%Y.%m.%d-%H:%M:%S"` # Date/Time output format
-# CUSTOMIZE END ######################################################
 
 
 # Begin ##############################################################
 echo "# Wireless Strength at $SLEEPTIME second intervals."
+echo "#   (Use ctrl-c to stop) " >&2
 echo "# "`date +"%c"`
 
 while true 
@@ -51,45 +52,4 @@ do
 	sleep $SLEEPTIME
 
 done
-
-# GNUPLOT NOTES
-#
-# INPUT (timefmt)
- # +-------------+--------------------------------------------------------------+
- # |  Format     |                Explanation                                   |
- # +-------------+--------------------------------------------------------------+
- # |    %f       |   floating point notation                                    |
- # |    %e or %E |   exponential notation; an "e" or "E" before the power       |
- # |    %g or %G |   the shorter of %e (or %E) and %f                           |
- # |    %x or %X |   hex                                                        |
- # |    %o or %O |   octal                                                      |
- # |    %t       |   mantissa to base 10                                        |
- # |    %l       |   mantissa to base of current logscale                       |
- # |    %s       |   mantissa to base of current logscale; scientific power     |
- # |    %T       |   power to base 10                                           |
- # |    %L       |   power to base of current logscale                          |
- # |    %S       |   scientific power                                           |
- # |    %c       |   character replacement for scientific power                 |
- # |    %P       |   multiple of pi                                             |
- # +-------------+--------------------------------------------------------------+
-
-# OUTPUT (format)
- # +-------------+--------------------------------------------------------------+
- # |  Format     |                Explanation                                   |
- # +-------------+--------------------------------------------------------------+
- # |    %a       |   abbreviated name of day of the week                        |
- # |    %A       |   full name of day of the week                               |
- # |    %b or %h |   abbreviated name of the month                              |
- # |    %B       |   full name of the month                                     |
- # |    %D       |   shorthand for "%m/%d/%y"                                   |
- # |    %H or %k |   hour, 0--24                                                |
- # |    %I or %l |   hour, 0--12                                                |
- # |    %p       |   "am" or "pm"                                               |
- # |    %r       |   shorthand for "%I:%M:%S %p"                                |
- # |    %R       |   shorthand for %H:%M"                                       |
- # |    %T       |   shorthand for "%H:%M:%S"                                   |
- # |    %U       |   week of the year (week starts on Sunday)                   |
- # |    %w       |   day of the week, 0--6 (Sunday = 0)                         |
- # |    %W       |   week of the year (week starts on Monday)                   |
- # +-------------+--------------------------------------------------------------+
 
