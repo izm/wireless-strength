@@ -18,19 +18,16 @@ echo "# "`date +"%c"`
 
 while true 
 do
-	s=`iwconfig $INTERFACE | grep -i quality`
-	# Now, s=something like: "  Link Quality=40/70 Signal level=-70 dBm"
+	s=`nm-tool | grep -e '^\s*\*'`
+	# Now, s=something like:
+	#    *networkid:     Infra, 00:13:46:1E:82:22, Freq 2437 MHz, Rate 54 Mb/s, Strength 100 WEP
 
-	i=`expr index "$s" "="` # Index of "=", right after "Link Quality"
-	s=${s:i} # Strip all that stuff away
-	l=`expr index "$s" " "` # End of number substring
-	s=${s:0:l-1} # Strip all the end stuff away
+	# Strip everything up to the number away, then get the number using awk
+	s=${s/*[sS]trength /}
+	s=`echo $s | awk '{print $1}'`
 
 	# Get output to be a decimal, or zero
-	output=`echo "scale=2;$s" | bc -l`
-	if [ `expr index $output "."` -eq 0 ]; then
-		output=0
-	fi
+	output=`echo "scale=2;$s/100" | bc -l`
 
 	echo -e $DATETIME"\t"$output
 	sleep $SLEEPTIME
