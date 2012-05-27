@@ -1,0 +1,47 @@
+Wireless Strength
+=================
+
+This is a set of two scripts: wireless-strength, ws-plot
+
+wireless-strength
+-----------------
+
+Usage: wireless-strength [interval]
+       interval: the length in seconds between polls, default=2
+
+Print your wireless signal strength to the console at set intervals.
+A log of the session is also created in the directory with the date
+and time the sessions was started and a .dat extension.  This requires
+"nm-tool", a command-line tool that is part of network-manager.
+
+ws-plot
+-------
+
+Usage: ws-plot <filename.dat> [<filename2.dat>]
+
+Create a png graph of the session using a "dat" file created by
+wireless-strength.  This requires gnuplot to be installed.
+
+
+Examples
+--------
+
+# Start polling at 5 second intervals, Ctrl+c to stop
+$ ./wireless-strength 5
+
+# Start polling at 2 second intervals - the default
+$ ./wireless-strength
+
+# Create a graph from the dat file created in the above session
+$ ./ws-plot 2012.05.27-16.42.29.dat 
+
+The created png will be named the same as the dat file, with .png attached.
+2012.05.27-16.42.29.dat.png
+
+# Create graphs from all dat files in the directory
+$ ./ws-plot *.dat
+
+
+Copyright
+---------
+Copyright (c) 2012 Steven Brown.  See LICENSE for details.

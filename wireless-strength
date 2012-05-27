@@ -4,8 +4,9 @@
 # http://www.stevenbrown.ca
 
 # CUSTOMIZE START ####################################################
-DATETIME=`date +"%Y.%m.%d-%H:%M:%S"` # Date/Time output format
+DATETIME="%Y.%m.%d-%H:%M:%S" # Date/Time output format
 DEFAULT_SLEEPTIME=2
+OUTFILE=`date +"%Y.%m.%d-%H.%M.%S"`
 # CUSTOMIZE END ######################################################
 
 print_usage_and_exit() {
@@ -48,7 +49,8 @@ do
 	# Get output to be a decimal, or zero
 	output=`echo "scale=2;$s/100" | bc -l`
 
-	echo -e $DATETIME"\t"$output
+	echo -e `date +$DATETIME`"\t"$output
+	echo -e `date +$DATETIME`"\t"$output >> "$OUTFILE.dat"
 	sleep $SLEEPTIME
 
 done

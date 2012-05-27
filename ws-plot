@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if ! [ `which gnuplot` ] ; then
+	echo "'gnuplot' not available." >&2
+	exit 1
+fi
+
+if ! [ $# -gt 0 ] ; then
+	echo "Usage: $0 <filename.dat> [<filename2.dat>]" >&2
+	exit 1
+fi
+
+for F in "$@"
+do
+	echo $F
+
+gnuplot <<EOF
+
+set xdata time
+set timefmt "%Y.%m.%d-%H:%M:%S"
+set grid
+#set xtics format "%a %I%p" # Long term plots: Sun 02pm
+set xtics format "%H:%M:%S" # Short term plots: 14:28:00
+set xtics nomirror rotate by -45
+
+set format y "%g %%"
+
+set xlabel "Time"
+set ylabel "Link Quality"
+
+#RANGE CUSTOMIZATION
+set yrange [0:100]
+#set xrange ["2012.05.27-11:43:44":"2012.05.27-11:43:59"]
+
+set terminal png #size 800, 400
+set output "$F.png"
+
+plot "$F" using 1:(\$2*100) title "Wireless Strength" with steps
+EOF
+
+done
+echo "Done."
